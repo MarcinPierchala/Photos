@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PhotosForSale.Models;
+using Photos.Models.Models;
 
-namespace PhotosForSale.Data
+namespace Photos.DataAccess.Data
 {
     public class ApplicationDbConext : DbContext
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PhotosForSale.Data;
-using PhotosForSale.Models;
+using Photos.DataAccess.Data;
+using Photos.Models.Models;
 
 namespace PhotosForSale.Controllers
 {

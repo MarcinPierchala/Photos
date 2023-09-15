@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
-namespace PhotosForSale.Models
+namespace Photos.Models.Models
 {
     public class Category
     {

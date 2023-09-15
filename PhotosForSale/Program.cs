@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PhotosForSale.Data;
+using Photos.DataAccess.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

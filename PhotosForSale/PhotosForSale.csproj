@@ -15,4 +15,10 @@
   	</PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Photos.DataAccess\Photos.DataAccess.csproj" />
+    <ProjectReference Include="..\Photos.Models\Photos.Models.csproj" />
+    <ProjectReference Include="..\Photos.Utility\Photos.Utility.csproj" />
+  </ItemGroup>
+
 </Project>

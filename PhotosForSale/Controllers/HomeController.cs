@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PhotosForSale.Models;
+using Photos.Models.Models;
 using System.Diagnostics;
 
 namespace PhotosForSale.Controllers

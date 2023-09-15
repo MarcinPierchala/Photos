@@ -1,4 +1,4 @@
-namespace PhotosForSale.Models
+namespace Photos.Models.Models
 {
     public class ErrorViewModel
     {
