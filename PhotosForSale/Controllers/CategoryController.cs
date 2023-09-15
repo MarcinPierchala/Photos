@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Photos.DataAccess.Data;
+using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 
 namespace PhotosForSale.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbConext _db;
+        private readonly ICategoryRepository _categoryRepo;
 
-        public CategoryController(ApplicationDbConext db)
+        public CategoryController(ICategoryRepository db)
         {
-            this._db = db;
+            _categoryRepo = db;
         }
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _db.Categories.ToList();
+            List<Category> objCategoryList = _categoryRepo.GetAll().ToList();
             return View(objCategoryList);
         }
 
@@ -31,8 +32,8 @@ namespace PhotosForSale.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _categoryRepo.Add(obj);
+                _categoryRepo.Save();
                 TempData["success"] = "Category created successfuly";
                 return RedirectToAction("Index", "Category");
             }
@@ -46,7 +47,7 @@ namespace PhotosForSale.Controllers
             {
                 return NotFound();
             }
-            Category categoryFromDb = _db.Categories.Find(id);
+            Category categoryFromDb = _categoryRepo.Get(u => u.Id == id);
             //Category categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
             //Category categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
             if (categoryFromDb == null)
@@ -65,8 +66,8 @@ namespace PhotosForSale.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _categoryRepo.Update(obj);
+                _categoryRepo.Save();
                 TempData["success"] = "Category updated successfuly";
                 return RedirectToAction("Index", "Category");
             }
@@ -80,7 +81,7 @@ namespace PhotosForSale.Controllers
             {
                 return NotFound();
             }
-            Category categoryFromDb = _db.Categories.Find(id);
+            Category categoryFromDb = _categoryRepo.Get(u => u.Id == id);
             //Category categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
             //Category categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
             if (categoryFromDb == null)
@@ -93,12 +94,13 @@ namespace PhotosForSale.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category obj = _db.Categories.Find(id); if (obj == null)
+            Category obj = _categoryRepo.Get(u => u.Id == id);
+            if (obj == null)
             {
                 return NotFound();
             }
-            _db.Categories.Remove(obj);
-            _db.SaveChanges();
+            _categoryRepo.Remove(obj);
+            _categoryRepo.Save();
             TempData["success"] = "Category deleted successfuly";
             return RedirectToAction("Index", "Category");
 
