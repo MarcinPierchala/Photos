@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Photos.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using Photos.DataAccess.Data;
 namespace Photos.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbConext))]
-    partial class ApplicationDbConextModelSnapshot : ModelSnapshot
+    [Migration("20230917113812_AddCategoryIdIntoPhotoProps")]
+    partial class AddCategoryIdIntoPhotoProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,10 +65,6 @@ namespace Photos.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -87,7 +86,6 @@ namespace Photos.DataAccess.Migrations
                             Author = "Billy Spark",
                             CategoryId = 13,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Price = 90.0,
                             Title = "Fortune of Time"
                         },
@@ -97,7 +95,6 @@ namespace Photos.DataAccess.Migrations
                             Author = "Nancy Hoover",
                             CategoryId = 13,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Price = 30.0,
                             Title = "Dark Skies"
                         },
@@ -107,7 +104,6 @@ namespace Photos.DataAccess.Migrations
                             Author = "Julian Button",
                             CategoryId = 13,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Price = 50.0,
                             Title = "Vanish in the Sunset"
                         },
@@ -117,7 +113,6 @@ namespace Photos.DataAccess.Migrations
                             Author = "Abby Muscles",
                             CategoryId = 13,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Price = 65.0,
                             Title = "Cotton Candy"
                         },
@@ -127,7 +122,6 @@ namespace Photos.DataAccess.Migrations
                             Author = "Ron Parker",
                             CategoryId = 13,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Price = 27.0,
                             Title = "Rock in the Ocean"
                         },
@@ -137,7 +131,6 @@ namespace Photos.DataAccess.Migrations
                             Author = "Laura Phantom",
                             CategoryId = 13,
                             Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                            ImageUrl = "",
                             Price = 23.0,
                             Title = "Leaves and Wonders"
                         });

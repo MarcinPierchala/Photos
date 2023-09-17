@@ -29,6 +29,8 @@ namespace Photos.DataAccess.Data
                     Author = "Billy Spark",
                     Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                     Price = 90,
+                    CategoryId = 13,
+                    ImageUrl = ""
                 },
                 new MyPhoto
                 {
@@ -37,6 +39,8 @@ namespace Photos.DataAccess.Data
                     Author = "Nancy Hoover",
                     Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                     Price = 30,
+                    CategoryId = 13,
+                    ImageUrl = ""
                 },
                 new MyPhoto
                 {
@@ -45,6 +49,8 @@ namespace Photos.DataAccess.Data
                     Author = "Julian Button",
                     Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                     Price = 50,
+                    CategoryId = 13,
+                    ImageUrl = ""
                 },
                 new MyPhoto
                 {
@@ -53,6 +59,8 @@ namespace Photos.DataAccess.Data
                     Author = "Abby Muscles",
                     Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                     Price = 65,
+                    CategoryId = 13,
+                    ImageUrl = ""
                 },
                 new MyPhoto
                 {
@@ -61,6 +69,8 @@ namespace Photos.DataAccess.Data
                     Author = "Ron Parker",
                     Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                     Price = 27,
+                    CategoryId = 13,
+                    ImageUrl = ""
                 },
                 new MyPhoto
                 {
@@ -69,6 +79,8 @@ namespace Photos.DataAccess.Data
                     Author = "Laura Phantom",
                     Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
                     Price = 23,
+                    CategoryId = 13,
+                    ImageUrl = ""
                 });
         }
     }
