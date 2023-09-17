@@ -1,4 +1,4 @@
-﻿@model MyPhoto
+﻿@model MyPhotoViewModel
 
 <form method="post">
     <div class="border p-3 mt-4 ">
@@ -7,31 +7,36 @@
             <hr />
         </div>
         <div class="mb-3 row p-1">
-            <label asp-for="Title" class="p-0"></label>
-            <input asp-for="Title" type="text" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
+            <label asp-for="MyPhoto.Title" class="p-0"></label>
+            <input asp-for="MyPhoto.Title" type="text" class="form-control" />
+            <span asp-validation-for="MyPhoto.Title" class="text-danger"></span>
         </div>
         <div class="mb-3 row p-1">
-            <label asp-for="Description" class="p-0"></label>
-            <input asp-for="Description" type="text" class="form-control" />
-            <span asp-validation-for="Description" class="text-danger"></span>
+            <label asp-for="MyPhoto.Description" class="p-0"></label>
+            <input asp-for="MyPhoto.Description" type="text" class="form-control" />
+            <span asp-validation-for="MyPhoto.Description" class="text-danger"></span>
         </div>
         <div class="mb-3 row p-1">
-            <label asp-for="Author" class="p-0"></label>
-            <input asp-for="Author" type="text" class="form-control" />
-            <span asp-validation-for="Author" class="text-danger"></span>
+            <label asp-for="MyPhoto.Author" class="p-0"></label>
+            <input asp-for="MyPhoto.Author" type="text" class="form-control" />
+            <span asp-validation-for="MyPhoto.Author" class="text-danger"></span>
         </div>
         <div class="mb-3 row p-1">
-            <label asp-for="CategoryId" class="p-0"></label>
-            <select label asp-for="CategoryId" asp-items="@(ViewData["CategoryList"] as IEnumerable<SelectListItem>)" class="form-select">
+            <label asp-for="MyPhoto.CategoryId" class="p-0"></label>
+            <select asp-for="@Model.MyPhoto.CategoryId" asp-items="@Model.CategoryList" class="form-select">
                 <option disabled selected>--Select Category--</option>
             </select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
+            <span asp-validation-for="MyPhoto.CategoryId" class="text-danger"></span>
         </div>
         <div class="mb-3 row p-1">
-            <label asp-for="Price" class="p-0"></label>
-            <input asp-for="Price" type="text" class="form-control" />
-            <span asp-validation-for="Price" class="text-danger"></span>
+            <label asp-for="MyPhoto.Price" class="p-0"></label>
+            <input asp-for="MyPhoto.Price" type="text" class="form-control" />
+            <span asp-validation-for="MyPhoto.Price" class="text-danger"></span>
+        </div>
+        <div class="mb-3 row p-1">
+            <label asp-for="MyPhoto.ImageUrl" class="p-0"></label>
+            <input asp-for="MyPhoto.ImageUrl" type="text" class="form-control" />
+            <span asp-validation-for="MyPhoto.ImageUrl" class="text-danger"></span>
         </div>
         <div class="row">
             <div class="col-6 col-md-3">

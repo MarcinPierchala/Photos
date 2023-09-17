@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Photos.DataAccess.Data;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
+using Photos.Models.Models.ViewModels;
 
 namespace PhotosForSale.Areas.Admin.Controllers
 {
@@ -22,36 +23,37 @@ namespace PhotosForSale.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            //Projection in EF Core HARD 2 remember
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+            MyPhotoViewModel myPhotoViewModel = new()
             {
-                Text = u.CategoryName,
-                Value = u.Id.ToString()
-            });
+                CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.CategoryName,
+                    Value = u.Id.ToString()
+                }),
+                MyPhoto = new MyPhoto()
+            };
 
-            //declare ViewBag - temporary bag of data - exist only during this http request
-            //ViewBag.CategoryList = CategoryList;
-
-            //declare ViewData - comape with ViewBag
-            ViewData["CategoryList"] = CategoryList;
-            return View();
+            return View(myPhotoViewModel);
         }
         [HttpPost]
-        public IActionResult Create(MyPhoto obj)
+        public IActionResult Create(MyPhotoViewModel myPhotoViewModel)
         {
-            if (obj.Title == obj.Description.ToString())
-            {
-                ModelState.AddModelError("title", "The Description can't exactly match the Photo Title.");
-            }
             if (ModelState.IsValid)
             {
-                _unitOfWork.MyPhoto.Add(obj);
+                _unitOfWork.MyPhoto.Add(myPhotoViewModel.MyPhoto);
                 _unitOfWork.Save();
                 TempData["success"] = "Photo added successfuly";
                 return RedirectToAction("Index", "MyPhoto");
             }
-            return View();
-
+            else
+            {
+                myPhotoViewModel.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.CategoryName,
+                    Value = u.Id.ToString()
+                });
+                return View(myPhotoViewModel);
+            }
         }
 
         public IActionResult Edit(int? id)
