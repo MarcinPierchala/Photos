@@ -13,12 +13,20 @@
   		<PrivateAssets>all</PrivateAssets>
   		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
   	</PackageReference>
+  	<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Photos.DataAccess\Photos.DataAccess.csproj" />
     <ProjectReference Include="..\Photos.Models\Photos.Models.csproj" />
     <ProjectReference Include="..\Photos.Utility\Photos.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Controllers\" />
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\" />
   </ItemGroup>
 
 </Project>
