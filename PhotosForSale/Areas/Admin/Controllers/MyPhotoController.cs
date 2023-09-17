@@ -30,7 +30,10 @@ namespace PhotosForSale.Areas.Admin.Controllers
             });
 
             //declare ViewBag - temporary bag of data - exist only during this http request
-            ViewBag.CategoryList = CategoryList;
+            //ViewBag.CategoryList = CategoryList;
+
+            //declare ViewData - comape with ViewBag
+            ViewData["CategoryList"] = CategoryList;
             return View();
         }
         [HttpPost]
