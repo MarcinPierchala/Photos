@@ -2,8 +2,9 @@
 using Photos.Models.Models;
 using System.Diagnostics;
 
-namespace PhotosForSale.Controllers
+namespace PhotosForSale.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

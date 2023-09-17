@@ -3,8 +3,9 @@ using Photos.DataAccess.Data;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 
-namespace PhotosForSale.Controllers
+namespace PhotosForSale.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
