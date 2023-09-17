@@ -8,7 +8,6 @@ namespace PhotosForSale.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryRepository _categoryRepo;
-
         public CategoryController(ICategoryRepository db)
         {
             _categoryRepo = db;
@@ -47,9 +46,9 @@ namespace PhotosForSale.Controllers
             {
                 return NotFound();
             }
-            Category categoryFromDb = _categoryRepo.Get(u => u.Id == id);
-            //Category categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
-            //Category categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
+            Category? categoryFromDb = _categoryRepo.Get(u => u.Id == id);
+            //Category? categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
+            //Category? categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -81,7 +80,7 @@ namespace PhotosForSale.Controllers
             {
                 return NotFound();
             }
-            Category categoryFromDb = _categoryRepo.Get(u => u.Id == id);
+            Category? categoryFromDb = _categoryRepo.Get(u => u.Id == id);
             //Category categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
             //Category categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
             if (categoryFromDb == null)
@@ -94,7 +93,7 @@ namespace PhotosForSale.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category obj = _categoryRepo.Get(u => u.Id == id);
+            Category? obj = _categoryRepo.Get(u => u.Id == id);
             if (obj == null)
             {
                 return NotFound();
