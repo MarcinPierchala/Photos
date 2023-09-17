@@ -9,6 +9,7 @@ namespace Photos.DataAccess.Repository.IRepository
     public interface IUnitOfWork
     {
         ICategoryRepository Category { get; }
+        IMyPhotoRepository MyPhoto { get; }
 
         void Save();
     }
