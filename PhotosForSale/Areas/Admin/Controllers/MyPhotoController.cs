@@ -60,7 +60,7 @@ namespace PhotosForSale.Areas.Admin.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    myPhotoViewModel.MyPhoto.ImageUrl = @"images\myPhoto\" + fileName;
+                    myPhotoViewModel.MyPhoto.ImageUrl = @"\images\myPhoto\" + fileName;
                 }
                 _unitOfWork.MyPhoto.Add(myPhotoViewModel.MyPhoto);
                 _unitOfWork.Save();
