@@ -23,6 +23,12 @@ namespace PhotosForSale.Areas.Customer.Controllers
             return View(photosList);
         }
 
+        public IActionResult Details(int photoId)
+        {
+            MyPhoto photo = _unitOfWork.MyPhoto.Get(u => u.Id == photoId, includeProperties: "Category");
+            return View(photo);
+        }
+
         public IActionResult Privacy()
         {
             return View();

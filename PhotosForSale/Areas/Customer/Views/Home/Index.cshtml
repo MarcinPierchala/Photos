@@ -8,6 +8,20 @@
                 <div class="col-12 p-1">
                     <div class="card border=0 p-3 shadow border-top border-5 rounded">
                         <img src="@photo.ImageUrl" class="card-img-top rounded"/>
+                        <div class="card-body pb-0">
+                            <div class="pl-1">
+                                <p class="card-title h5 text-white opacity-75 text-uppercase text-center">@photo.Title</p>
+                                <p class="card-title text-warning text-center">made by <b>@photo.Author</b></p>
+                            </div>
+                            <div class="pl-1">
+                                <p class="text-white opacity-75 text-center">Cena: <b>@photo.Price.ToString()</b> zł,-</p>
+                            </div>
+                        </div>
+                        <div>
+                            <a asp-action="Details" asp-route-photoId="@photo.Id" class="btn btn-primary bg-gradient border-0 form-control">
+                                Szczegóły
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
