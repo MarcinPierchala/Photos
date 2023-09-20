@@ -11,9 +11,11 @@ namespace PhotosForSale.Areas.Admin.Controllers
     public class MyPhotoController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public MyPhotoController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public MyPhotoController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -48,6 +50,18 @@ namespace PhotosForSale.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                string wwwRoothPath = _webHostEnvironment.WebRootPath;
+                if(file!=null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string myPhotoPath = Path.Combine(wwwRoothPath, @"images\myPhoto");
+
+                    using (var fileStream = new FileStream(Path.Combine(myPhotoPath, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    myPhotoViewModel.MyPhoto.ImageUrl = @"images\myPhoto\" + fileName;
+                }
                 _unitOfWork.MyPhoto.Add(myPhotoViewModel.MyPhoto);
                 _unitOfWork.Save();
                 TempData["success"] = "Photo added successfuly";
