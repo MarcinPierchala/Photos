@@ -21,7 +21,7 @@ namespace PhotosForSale.Areas.Admin.Controllers
             return View(objMyPhotoList);
         }
 
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
             MyPhotoViewModel myPhotoViewModel = new()
             {
@@ -32,11 +32,19 @@ namespace PhotosForSale.Areas.Admin.Controllers
                 }),
                 MyPhoto = new MyPhoto()
             };
-
-            return View(myPhotoViewModel);
+            if(id == null || id == 0)// create
+            {
+                return View(myPhotoViewModel);
+            }
+            else// update
+            {
+                myPhotoViewModel.MyPhoto = _unitOfWork.MyPhoto.Get(u=>u.Id==id);
+                return View(myPhotoViewModel);
+            }
+            
         }
         [HttpPost]
-        public IActionResult Create(MyPhotoViewModel myPhotoViewModel)
+        public IActionResult Upsert(MyPhotoViewModel myPhotoViewModel, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
@@ -56,39 +64,39 @@ namespace PhotosForSale.Areas.Admin.Controllers
             }
         }
 
-        public IActionResult Edit(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            MyPhoto? myPhotoFromDb = _unitOfWork.MyPhoto.Get(u => u.Id == id);
-            //Category? categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
-            //Category? categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
-            if (myPhotoFromDb == null)
-            {
-                return NotFound();
-            }
-            return View(myPhotoFromDb);
-        }
+        //public IActionResult Edit(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return NotFound();
+        //    }
+        //    MyPhoto? myPhotoFromDb = _unitOfWork.MyPhoto.Get(u => u.Id == id);
+        //    //Category? categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
+        //    //Category? categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
+        //    if (myPhotoFromDb == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(myPhotoFromDb);
+        //}
 
-        [HttpPost]
-        public IActionResult Edit(MyPhoto obj)
-        {
-            if (obj.Title == obj.Description.ToString())
-            {
-                ModelState.AddModelError("title", "The Description can't exactly match the Photo Title.");
-            }
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.MyPhoto.Update(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Photo updated successfuly";
-                return RedirectToAction("Index", "MyPhoto");
-            }
-            return View();
+        //[HttpPost]
+        //public IActionResult Edit(MyPhoto obj)
+        //{
+        //    if (obj.Title == obj.Description.ToString())
+        //    {
+        //        ModelState.AddModelError("title", "The Description can't exactly match the Photo Title.");
+        //    }
+        //    if (ModelState.IsValid)
+        //    {
+        //        _unitOfWork.MyPhoto.Update(obj);
+        //        _unitOfWork.Save();
+        //        TempData["success"] = "Photo updated successfuly";
+        //        return RedirectToAction("Index", "MyPhoto");
+        //    }
+        //    return View();
 
-        }
+        //}
 
         public IActionResult Delete(int? id)
         {
