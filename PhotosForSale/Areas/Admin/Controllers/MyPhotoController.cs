@@ -56,13 +56,32 @@ namespace PhotosForSale.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string myPhotoPath = Path.Combine(wwwRoothPath, @"images\myPhoto");
 
+                    if(!string.IsNullOrEmpty(myPhotoViewModel.MyPhoto.ImageUrl)) //del the old img
+                    {
+                        var oldImgPath = Path.Combine(wwwRoothPath, myPhotoViewModel.MyPhoto.ImageUrl.TrimStart('\\'));
+
+                        if(System.IO.File.Exists(oldImgPath))
+                        {
+                            System.IO.File.Delete(oldImgPath);
+                        }
+                    }
+
                     using (var fileStream = new FileStream(Path.Combine(myPhotoPath, fileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
                     }
                     myPhotoViewModel.MyPhoto.ImageUrl = @"\images\myPhoto\" + fileName;
                 }
-                _unitOfWork.MyPhoto.Add(myPhotoViewModel.MyPhoto);
+
+                if(myPhotoViewModel.MyPhoto.Id == 0)
+                {
+                    _unitOfWork.MyPhoto.Add(myPhotoViewModel.MyPhoto);
+                }
+                else
+                {
+                    _unitOfWork.MyPhoto.Update(myPhotoViewModel.MyPhoto);
+                }
+                
                 _unitOfWork.Save();
                 TempData["success"] = "Photo added successfuly";
                 return RedirectToAction("Index", "MyPhoto");
