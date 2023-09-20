@@ -131,35 +131,64 @@ namespace PhotosForSale.Areas.Admin.Controllers
 
         //}
 
+        //public IActionResult Delete(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return NotFound();
+        //    }
+        //    MyPhoto? myPhotoFromDb = _unitOfWork.MyPhoto.Get(u => u.Id == id);
+        //    //Category categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
+        //    //Category categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
+        //    if (myPhotoFromDb == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(myPhotoFromDb);
+        //}
+
+        //[HttpPost, ActionName("Delete")]
+        //public IActionResult DeletePOST(int? id)
+        //{
+        //    MyPhoto? obj = _unitOfWork.MyPhoto.Get(u => u.Id == id);
+        //    if (obj == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    _unitOfWork.MyPhoto.Remove(obj);
+        //    _unitOfWork.Save();
+        //    TempData["success"] = "Photo deleted successfuly";
+        //    return RedirectToAction("Index", "MyPhoto");
+
+        //}
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll() 
+        {
+            List<MyPhoto> objMyPhotoList = _unitOfWork.MyPhoto.GetAll(includeProperties: "Category").ToList();
+            return Json(new {data = objMyPhotoList});
+        }
+
+        [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            if (id == null || id == 0)
+            var photoToBeDeleted = _unitOfWork.MyPhoto.Get(u=>u.Id== id);
+            if (photoToBeDeleted == null)
             {
-                return NotFound();
+                return Json(new {success = false, message = "Error while deleting"});
             }
-            MyPhoto? myPhotoFromDb = _unitOfWork.MyPhoto.Get(u => u.Id == id);
-            //Category categoryFromDb_01 = _db.Categories.FirstOrDefault(u => u.Id == id);
-            //Category categoryFromDb_02 = _db.Categories.Where(u=>u.Id == id).FirstOrDefault();
-            if (myPhotoFromDb == null)
-            {
-                return NotFound();
-            }
-            return View(myPhotoFromDb);
-        }
+            var oldImgPath = Path.Combine(_webHostEnvironment.WebRootPath, photoToBeDeleted.ImageUrl.TrimStart('\\'));
 
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
-        {
-            MyPhoto? obj = _unitOfWork.MyPhoto.Get(u => u.Id == id);
-            if (obj == null)
+            if (System.IO.File.Exists(oldImgPath))
             {
-                return NotFound();
+                System.IO.File.Delete(oldImgPath);
             }
-            _unitOfWork.MyPhoto.Remove(obj);
+
+            _unitOfWork.MyPhoto.Remove(photoToBeDeleted);
             _unitOfWork.Save();
-            TempData["success"] = "Photo deleted successfuly";
-            return RedirectToAction("Index", "MyPhoto");
-
+            return Json(new { success = true, message = "Delete successful"});
         }
+        #endregion
     }
 }
