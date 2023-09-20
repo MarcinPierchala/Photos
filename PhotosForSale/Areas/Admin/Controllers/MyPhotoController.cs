@@ -19,7 +19,7 @@ namespace PhotosForSale.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<MyPhoto> objMyPhotoList = _unitOfWork.MyPhoto.GetAll().ToList();
+            List<MyPhoto> objMyPhotoList = _unitOfWork.MyPhoto.GetAll(includeProperties:"Category").ToList();
             return View(objMyPhotoList);
         }
 
