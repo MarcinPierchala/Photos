@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Photos.DataAccess.Data;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 using Photos.Models.Models.ViewModels;
+using Photos.Utility;
+using System.Data;
 
 namespace PhotosForSale.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class MyPhotoController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
