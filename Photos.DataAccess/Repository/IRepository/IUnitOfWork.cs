@@ -10,6 +10,7 @@ namespace Photos.DataAccess.Repository.IRepository
     {
         ICategoryRepository Category { get; }
         IMyPhotoRepository MyPhoto { get; }
+        ICompanyRepository Company { get; }
 
         void Save();
     }
