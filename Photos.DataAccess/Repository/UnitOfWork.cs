@@ -14,12 +14,14 @@ namespace Photos.DataAccess.Repository
         public ICategoryRepository Category { get; private set; }
         public IMyPhotoRepository MyPhoto { get; private set; }
         public ICompanyRepository Company { get; private set; }
+        public IShoppingCartRepository ShoppingCart { get; private set; }
         public UnitOfWork(ApplicationDbConext db)
         {
             _db = db;
             Category = new CategoryRepository(_db);
             MyPhoto = new MyPhotoRepository(_db);
             Company = new CompanyRepository(_db);
+            ShoppingCart = new ShoppingCartRepository(_db);
         }
         
         public void Save()
