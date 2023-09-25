@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /PhotosForSale/wwwroot/images/myPhoto
 /PhotosForSale/appsettings.json
+/PhotosForSale/appsettings.Development.json
