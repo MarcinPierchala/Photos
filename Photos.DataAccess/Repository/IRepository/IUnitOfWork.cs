@@ -12,6 +12,7 @@ namespace Photos.DataAccess.Repository.IRepository
         IMyPhotoRepository MyPhoto { get; }
         ICompanyRepository Company { get; }
         IShoppingCartRepository ShoppingCart { get; }
+        IApplicationUserRepository ApplicationUser { get; }
 
         void Save();
     }
