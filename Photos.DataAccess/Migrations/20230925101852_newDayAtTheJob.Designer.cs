@@ -12,8 +12,8 @@ using Photos.DataAccess.Data;
 namespace Photos.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbConext))]
-    [Migration("20230924185454_somethungIsFail555")]
-    partial class somethungIsFail555
+    [Migration("20230925101852_newDayAtTheJob")]
+    partial class newDayAtTheJob
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
