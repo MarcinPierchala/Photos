@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace PhotosForSale.Areas.Customer.Controllers
 {
@@ -30,6 +32,16 @@ namespace PhotosForSale.Areas.Customer.Controllers
                 MyPhoto = _unitOfWork.MyPhoto.Get(u => u.Id == photoId, includeProperties: "Category"),
                 PhotoId = photoId
             };
+            return View(shoppingCart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             return View(shoppingCart);
         }
 
