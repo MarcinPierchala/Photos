@@ -27,32 +27,24 @@ namespace Photos.DataAccess.Repository
 
         public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
+            IQueryable<T> query;
             if (tracked)
             {
-                IQueryable<T> query = dbSet;
-                query = query.Where(filter);
-                if (!string.IsNullOrEmpty(includeProperties))
-                {
-                    foreach (var inclProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        query = query.Include(inclProp);
-                    }
-                }
-                return query.FirstOrDefault();
+                query = dbSet;                
             }
             else
             {
-                IQueryable<T> query = dbSet.AsNoTracking();
-                query = query.Where(filter);
-                if (!string.IsNullOrEmpty(includeProperties))
+                query = dbSet.AsNoTracking();
+            }
+            query = query.Where(filter);
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var inclProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    foreach (var inclProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        query = query.Include(inclProp);
-                    }
+                    query = query.Include(inclProp);
                 }
-                return query.FirstOrDefault();
-            }            
+            }
+            return query.FirstOrDefault();
         }
 
         //Category,CoverType
