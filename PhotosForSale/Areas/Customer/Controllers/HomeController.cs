@@ -25,8 +25,12 @@ namespace PhotosForSale.Areas.Customer.Controllers
 
         public IActionResult Details(int photoId)
         {
-            MyPhoto photo = _unitOfWork.MyPhoto.Get(u => u.Id == photoId, includeProperties: "Category");
-            return View(photo);
+            ShoppingCart shoppingCart = new()
+            {
+                MyPhoto = _unitOfWork.MyPhoto.Get(u => u.Id == photoId, includeProperties: "Category"),
+                PhotoId = photoId
+            };
+            return View(shoppingCart);
         }
 
         public IActionResult Privacy()
