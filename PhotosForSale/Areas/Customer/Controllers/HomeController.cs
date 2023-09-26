@@ -41,8 +41,26 @@ namespace PhotosForSale.Areas.Customer.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.ApplicationUserId = userId;
 
-            return View(shoppingCart);
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(c=>c.ApplicationUserId == userId &&
+            c.PhotoId == shoppingCart.PhotoId);
+
+            if(cartFromDb != null)
+            {
+                //shopping cart already exist
+                TempData["success"] = "To zdjęcie już znajduje się w koszyku";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                //must add new shopping cart
+                TempData["success"] = "Super, zdjęcie zostało dodane do koszyka!";
+                _unitOfWork.ShoppingCart.Add(shoppingCart);
+            }
+            _unitOfWork.ShoppingCart.Add(shoppingCart);
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()
