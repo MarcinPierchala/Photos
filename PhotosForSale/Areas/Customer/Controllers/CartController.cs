@@ -33,5 +33,14 @@ namespace PhotosForSale.Areas.Customer.Controllers
             }
             return View(ShoppingCartVM);
         }
+
+        public IActionResult Remove(int cartId) 
+        {
+            var cartFromDb = _unitOfWork.ShoppingCart.Get(u=>u.Id == cartId);
+            _unitOfWork.ShoppingCart.Remove(cartFromDb);
+            _unitOfWork.Save();
+            TempData["success"] = "Zdjęcie usunięto z koszyka";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
