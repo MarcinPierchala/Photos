@@ -24,12 +24,13 @@ namespace PhotosForSale.Areas.Customer.Controllers
             ShoppingCartVM = new()
             {
                 ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,
-                includeProperties: "MyPhoto")
+                includeProperties: "MyPhoto"),
+                OrderHeader = new ()
             };
 
             foreach(var cart in  ShoppingCartVM.ShoppingCartList)
             {
-                ShoppingCartVM.OrderTotal += cart.MyPhoto.Price;
+                ShoppingCartVM.OrderHeader.OrderTotal += cart.MyPhoto.Price;
             }
             return View(ShoppingCartVM);
         }
