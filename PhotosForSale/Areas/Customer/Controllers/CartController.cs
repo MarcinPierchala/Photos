@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 using Photos.Models.Models.ViewModels;
+using Photos.Utility;
 using System.Security.Claims;
 
 namespace PhotosForSale.Areas.Customer.Controllers
@@ -12,6 +13,7 @@ namespace PhotosForSale.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
         public CartController(IUnitOfWork unitOfWork)
         {
@@ -62,7 +64,63 @@ namespace PhotosForSale.Areas.Customer.Controllers
             return View(ShoppingCartVM);
         }
 
-        public IActionResult Remove(int cartId) 
+        [HttpPost]
+        [ActionName("Summary")]
+        public IActionResult SummaryPOST()
+		{
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId,
+                includeProperties: "MyPhoto");
+				
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+            ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
+
+			ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+
+			foreach (var cart in ShoppingCartVM.ShoppingCartList)
+			{
+				ShoppingCartVM.OrderHeader.OrderTotal += cart.MyPhoto.Price;
+			}
+            if (ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer 
+            {
+                ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+                ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+            }
+            else//is company user
+            {
+				ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
+				ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
+			}
+            
+            _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+            _unitOfWork.Save();
+
+            foreach(var card in ShoppingCartVM.ShoppingCartList)
+            {
+                OrderDetail orderDetail = new()
+                {
+                    PhotoId = card.PhotoId,
+                    OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+                    Price = card.MyPhoto.Price,
+                };
+                _unitOfWork.OrderDetail.Add(orderDetail);
+                _unitOfWork.Save();
+			}
+			if (ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer => needed to capture payment
+			{
+                //stripe logic
+			}
+
+			return RedirectToAction(nameof(OrderConfirmation),new {id=ShoppingCartVM.OrderHeader.Id});
+		}
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
+        }
+
+		public IActionResult Remove(int cartId) 
         {
             var cartFromDb = _unitOfWork.ShoppingCart.Get(u=>u.Id == cartId);
             _unitOfWork.ShoppingCart.Remove(cartFromDb);
