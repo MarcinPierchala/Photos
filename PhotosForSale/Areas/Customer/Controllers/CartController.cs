@@ -76,13 +76,13 @@ namespace PhotosForSale.Areas.Customer.Controllers
             ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
             ShoppingCartVM.OrderHeader.ApplicationUserId = userId;
 
-			ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
+			ApplicationUser applicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userId);
 
 			foreach (var cart in ShoppingCartVM.ShoppingCartList)
 			{
 				ShoppingCartVM.OrderHeader.OrderTotal += cart.MyPhoto.Price;
 			}
-            if (ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer 
+            if (applicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer 
             {
                 ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
                 ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
@@ -107,7 +107,7 @@ namespace PhotosForSale.Areas.Customer.Controllers
                 _unitOfWork.OrderDetail.Add(orderDetail);
                 _unitOfWork.Save();
 			}
-			if (ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer => needed to capture payment
+			if (applicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer => needed to capture payment
 			{
                 //stripe logic
 			}
