@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Photos.Models.Models;
+using System.Linq;
 
 namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
 {
@@ -58,19 +60,47 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Street Address")]
+            public string StreetAddress { get; set; }
+
+            [Display(Name = "City")]
+            public string City { get; set; }
+
+            [Display(Name = "Postal Code")]
+            public string PostalCode { get; set; }
+
+            [Display(Name = "State")]
+            public string State { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
-            Username = userName;
+            var streetAddress = user.StreetAddress;
+            var city = user.City;
+            var postalCode = user.PostalCode;
+            var state = user.State;
+            var name = user.Name;
+            //GetUserData(user.UserName);
+           
+            Username = name;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                StreetAddress = streetAddress,
+                City = city,
+                PostalCode = postalCode,
+                State = state
             };
+        }
+
+        private void GetUserData(string userName)
+        {
+            var userData = new ApplicationUser();
+
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -81,13 +111,14 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            await LoadAsync(user);
+            await LoadAsync((ApplicationUser)user);
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+            ApplicationUser appUser = (ApplicationUser)user;
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -95,7 +126,7 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync(user);
+                await LoadAsync(appUser);
                 return Page();
             }
 
@@ -110,7 +141,7 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync((ApplicationUser)user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
