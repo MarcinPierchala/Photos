@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Photos.Models.Models;
 using System.Linq;
+using Photos.DataAccess.Repository;
+using Photos.DataAccess.Repository.IRepository;
 
 namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
 {
@@ -18,13 +20,16 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         public IndexModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<IdentityUser> signInManager,
+            IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -57,6 +62,10 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+
+            [Display(Name = "Full Name")]
+            public string Name { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -76,31 +85,22 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var phoneNumber = user.PhoneNumber;
             var streetAddress = user.StreetAddress;
             var city = user.City;
             var postalCode = user.PostalCode;
             var state = user.State;
             var name = user.Name;
-            //GetUserData(user.UserName);
-           
-            Username = name;
 
             Input = new InputModel
             {
+                Name = name,
                 PhoneNumber = phoneNumber,
                 StreetAddress = streetAddress,
                 City = city,
                 PostalCode = postalCode,
                 State = state
             };
-        }
-
-        private void GetUserData(string userName)
-        {
-            var userData = new ApplicationUser();
-
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -130,16 +130,26 @@ namespace PhotosForSale.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
-                    return RedirectToPage();
-                }
-            }
+            appUser.Name = Input.Name;
+            appUser.PhoneNumber = Input.PhoneNumber;
+            appUser.State = Input.State;
+            appUser.City = Input.City;
+            appUser.StreetAddress = Input.StreetAddress;
+            appUser.PostalCode = Input.PostalCode;
+
+            _unitOfWork.ApplicationUser.Update(appUser);
+            _unitOfWork.Save();
+
+            //var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            //if (Input.PhoneNumber != phoneNumber)
+            //{
+            //    var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+            //    if (!setPhoneResult.Succeeded)
+            //    {
+            //        StatusMessage = "Unexpected error when trying to set phone number.";
+            //        return RedirectToPage();
+            //    }
+            //}
 
             await _signInManager.RefreshSignInAsync((ApplicationUser)user);
             StatusMessage = "Your profile has been updated";
