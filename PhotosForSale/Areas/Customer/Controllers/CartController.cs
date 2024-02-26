@@ -4,6 +4,7 @@ using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 using Photos.Models.Models.ViewModels;
 using Photos.Utility;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace PhotosForSale.Areas.Customer.Controllers
@@ -110,7 +111,40 @@ namespace PhotosForSale.Areas.Customer.Controllers
 			if (applicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer => needed to capture payment
 			{
                 //stripe logic
-			}
+                var domain = "https://localhost:7100/";
+                var options = new Stripe.Checkout.SessionCreateOptions
+                {
+                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
+                    CancelUrl = domain + "customer/cart/index",
+                    LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
+                    Mode = "payment",
+                };
+
+                foreach(var item in ShoppingCartVM.ShoppingCartList)
+                {
+                    var sessionLineItem = new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(item.MyPhoto.Price * 100),
+                            Currency = "pln",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = item.MyPhoto.Title
+                            }
+                        },
+                        Quantity = 1
+                        
+                    };
+                    options.LineItems.Add(sessionLineItem);
+                }
+                var service = new Stripe.Checkout.SessionService();
+                Session session = service.Create(options);
+                _unitOfWork.OrderHeader.UpdateSrtipePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+                _unitOfWork.Save();
+                Response.Headers.Add("Location", session.Url);
+                return new StatusCodeResult(303);
+            }
 
 			return RedirectToAction(nameof(OrderConfirmation),new {id=ShoppingCartVM.OrderHeader.Id});
 		}
