@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
+using Photos.Models.Models.ViewModels;
 using Photos.Utility;
 using System.Diagnostics;
 
@@ -18,6 +19,16 @@ namespace PhotosForSale.Areas.Admin.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Details(int orderId)
+        {
+            OrderVM orderVM = new()
+            {
+                OrderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == orderId, includeProperties: "ApplicationUser"),
+                OrderDetail = _unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == orderId, includeProperties: "MyPhoto")
+            };
+            return View(orderVM);
         }
 
         #region API CALLS
