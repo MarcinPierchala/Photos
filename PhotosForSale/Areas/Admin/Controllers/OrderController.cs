@@ -11,6 +11,7 @@ using System.Security.Claims;
 namespace PhotosForSale.Areas.Admin.Controllers
 {
     [Area("admin")]
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -59,6 +60,37 @@ namespace PhotosForSale.Areas.Admin.Controllers
             _unitOfWork.Save();
             TempData["Success"] = "Pomyślnie zaktualizowano dane zamówienia.";
             return RedirectToAction(nameof(Details), new { orderId = orderHeaderFromDb.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult StartProcessing()
+        {
+            _unitOfWork.OrderHeader.UpdateStatus(OrderVM.OrderHeader.Id, SD.StatusInProcess);
+            _unitOfWork.Save();
+
+            TempData["Success"] = "Pomyślnie zaktualizowano status zamówienia.";
+            return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult ShipOrder()
+        {
+            var orderHeaderFromDB = _unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id);
+            orderHeaderFromDB.Carrier = OrderVM.OrderHeader.Carrier;
+            orderHeaderFromDB.TrackingNumber = OrderVM.OrderHeader.TrackingNumber;
+            orderHeaderFromDB.OrderStatus = SD.StatusShipped;
+            orderHeaderFromDB.ShippingDate = DateTime.Now;
+            if(orderHeaderFromDB.PaymentStatus == SD.PaymentStatusDelayedPayment)
+            {
+                orderHeaderFromDB.PaymentDueDate = DateTime.Now.AddDays(30);
+            }
+            _unitOfWork.OrderHeader.Update(orderHeaderFromDB);
+            _unitOfWork.Save();
+
+            TempData["Success"] = "Zamówienie zostało wysłane.";
+            return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
         }
 
         #region API CALLS

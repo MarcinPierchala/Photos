@@ -11,7 +11,7 @@ using System.Data;
 namespace PhotosForSale.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    //[Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
