@@ -5,6 +5,7 @@ using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
 using Photos.Models.Models.ViewModels;
 using Photos.Utility;
+using Stripe;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -90,6 +91,35 @@ namespace PhotosForSale.Areas.Admin.Controllers
             _unitOfWork.Save();
 
             TempData["Success"] = "Zamówienie zostało wysłane.";
+            return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult CancelOrder()
+        {
+            var orderHeaderFromDB = _unitOfWork.OrderHeader.Get(u => u.Id == OrderVM.OrderHeader.Id);
+            if(orderHeaderFromDB.PaymentStatus == SD.PaymentStatusApproved)
+            {
+                var options = new RefundCreateOptions
+                {
+                    Reason = RefundReasons.RequestedByCustomer,
+                    PaymentIntent = orderHeaderFromDB.PaymentIntentId
+                };
+                var service = new RefundService();
+                Refund refrund = service.Create(options);
+                _unitOfWork.OrderHeader
+                    .UpdateStatus(orderHeaderFromDB.Id, SD.StatusCancelled, SD.StatusRefunded);
+            }
+            else
+            {
+                _unitOfWork.OrderHeader
+                    .UpdateStatus(orderHeaderFromDB.Id, SD.StatusCancelled, SD.StatusCancelled);
+            }
+
+            _unitOfWork.Save();
+
+            TempData["Success"] = "Zamówienie zostało anulowane.";
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
         }
 
