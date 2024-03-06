@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
+using Photos.Utility;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Linq;
 
 namespace PhotosForSale.Areas.Customer.Controllers
 {
@@ -21,6 +24,15 @@ namespace PhotosForSale.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            if(userId is not null)
+            {
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                    _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId.Value).Count());
+            }
+
             IEnumerable<MyPhoto> photosList = _unitOfWork.MyPhoto.GetAll(includeProperties: "Category");
             return View(photosList);
         }
@@ -55,11 +67,14 @@ namespace PhotosForSale.Areas.Customer.Controllers
             else
             {
                 //must add new shopping cart
-                TempData["success"] = "Super, zdjęcie zostało dodane do koszyka!";
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart, 
+                    _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
+                TempData["success"] = "Super, zdjęcie zostało dodane do koszyka!";
             }
-            _unitOfWork.ShoppingCart.Add(shoppingCart);
-            _unitOfWork.Save();
+            //_unitOfWork.ShoppingCart.Add(shoppingCart);
+            //_unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
