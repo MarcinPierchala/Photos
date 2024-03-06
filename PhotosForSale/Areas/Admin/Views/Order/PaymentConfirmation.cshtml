@@ -1,0 +1,16 @@
+﻿@model int
+
+<div class="container row pt-4">
+    <div class="col-12 text-center">
+        <h1 class="text-primary text-center">Płatność zakończona</h1>
+        Numer Twojego zamówienia to: @Model <br /><br />
+    </div>
+    <div class="col-12 text-center" style="color: maroon">
+        <br />
+        Proces płatności zakończony sukcesem<br />
+        <a asp-area="Admin" 
+        asp-controller="Order" 
+        asp-action="Details" 
+        asp-route-orderId="@Model" class="btn btn-primary">Powrót do szczegółów zamówienia</a>
+    </div>
+</div>

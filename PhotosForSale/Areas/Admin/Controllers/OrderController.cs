@@ -6,6 +6,8 @@ using Photos.Models.Models;
 using Photos.Models.Models.ViewModels;
 using Photos.Utility;
 using Stripe;
+using Stripe.Checkout;
+using Stripe.Climate;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -121,6 +123,69 @@ namespace PhotosForSale.Areas.Admin.Controllers
 
             TempData["Success"] = "Zamówienie zostało anulowane.";
             return RedirectToAction(nameof(Details), new { orderId = OrderVM.OrderHeader.Id });
+        }
+
+        [ActionName("Details")]
+        [HttpPost]
+        public IActionResult Details_PayNow()
+        {
+            OrderVM.OrderHeader = _unitOfWork.OrderHeader
+                .Get(u => u.Id == OrderVM.OrderHeader.Id, includeProperties: "ApplicationUser");
+            OrderVM.OrderDetail = _unitOfWork.OrderDetail
+                .GetAll(u => u.OrderHeaderId == OrderVM.OrderHeader.Id, includeProperties: "MyPhoto");
+
+            //stripe logic
+            var domain = "https://localhost:7100/";
+            var options = new Stripe.Checkout.SessionCreateOptions
+            {
+                SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={OrderVM.OrderHeader.Id}",
+                CancelUrl = domain + $"admin/order/details?orderId={OrderVM.OrderHeader.Id}",
+                LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+
+            foreach (var item in OrderVM.OrderDetail)
+            {
+                var sessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.MyPhoto.Price * 100),
+                        Currency = "pln",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.MyPhoto.Title
+                        }
+                    },
+                    Quantity = 1
+
+                };
+                options.LineItems.Add(sessionLineItem);
+            }
+            var service = new Stripe.Checkout.SessionService();
+            Session session = service.Create(options);
+            _unitOfWork.OrderHeader.UpdateSrtipePaymentID(OrderVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
+        }
+        public IActionResult PaymentConfirmation(int orderHeaderId)
+        {
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == orderHeaderId);
+            if (orderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment)//is company order?
+            {
+                var service = new SessionService();
+                Session session = service.Get(orderHeader.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _unitOfWork.OrderHeader.UpdateSrtipePaymentID(orderHeaderId, session.Id, session.PaymentIntentId);
+                    _unitOfWork.OrderHeader.UpdateStatus(orderHeaderId, orderHeader.OrderStatus, SD.PaymentStatusApproved);
+                    _unitOfWork.Save();
+                }
+            }
+            
+            return View(orderHeaderId);
         }
 
         #region API CALLS
