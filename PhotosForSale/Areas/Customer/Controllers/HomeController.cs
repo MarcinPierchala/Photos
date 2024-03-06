@@ -24,15 +24,7 @@ namespace PhotosForSale.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            if(userId is not null)
-            {
-                HttpContext.Session.SetInt32(SD.SessionCart,
-                    _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId.Value).Count());
-            }
-
+            
             IEnumerable<MyPhoto> photosList = _unitOfWork.MyPhoto.GetAll(includeProperties: "Category");
             return View(photosList);
         }
