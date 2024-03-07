@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Photos.DataAccess.Repository.IRepository;
 using Photos.Models.Models;
@@ -14,11 +15,14 @@ namespace PhotosForSale.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailSender _emailSender;
+
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
-        public CartController(IUnitOfWork unitOfWork)
+        public CartController(IUnitOfWork unitOfWork, IEmailSender emailSender)
         {
             _unitOfWork = unitOfWork;
+            _emailSender = emailSender;
         }
         public IActionResult Index()
         {
@@ -170,6 +174,10 @@ namespace PhotosForSale.Areas.Customer.Controllers
                 }
                 HttpContext.Session.Clear();
             }
+
+            _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email,
+                "Masz nowe zamówienie - Photos Software",
+                $"Cześć\n\n\nPotwierdzenie nowego zamówienia nr: {orderHeader.Id}");
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
                 .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
