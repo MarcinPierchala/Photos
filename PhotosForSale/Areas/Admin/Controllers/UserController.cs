@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,11 @@ namespace PhotosForSale.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbConext _db;
-        public UserController(ApplicationDbConext db)
+        private readonly UserManager<IdentityUser> _userManager;
+        public UserController(ApplicationDbConext db, UserManager<IdentityUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -46,6 +49,31 @@ namespace PhotosForSale.Areas.Admin.Controllers
             roleManagementVM.ApplicationUser.Role = _db.Roles.FirstOrDefault(u => u.Id == roleId).Name;
 
             return View(roleManagementVM);
+        }
+
+        [HttpPost]
+        public IActionResult RoleManagement(RoleManagementVM roleManagementVM)
+        {
+            string roleId = _db.UserRoles.FirstOrDefault(u => u.UserId == roleManagementVM.ApplicationUser.Id).RoleId;
+            string oldRole = _db.Roles.FirstOrDefault(u => u.Id == roleId).Name;
+
+            if(!(roleManagementVM.ApplicationUser.Role == oldRole))//a role was updated
+            {
+                ApplicationUser applicationUser = _db.ApplicationUsers.FirstOrDefault(u=>u.Id==roleManagementVM.ApplicationUser.Id);
+                if(roleManagementVM.ApplicationUser.Role == SD.Role_Company) 
+                {
+                    applicationUser.CompanyId = roleManagementVM.ApplicationUser.CompanyId;
+                }
+                if(oldRole == SD.Role_Company)
+                {
+                    applicationUser.CompanyId = null;
+                }
+                _db.SaveChanges();
+
+                _userManager.RemoveFromRoleAsync(applicationUser, oldRole).GetAwaiter().GetResult();
+                _userManager.AddToRoleAsync(applicationUser, roleManagementVM.ApplicationUser.Role).GetAwaiter().GetResult();
+            }
+            return RedirectToAction("Index");
         }
 
         #region API CALLS
