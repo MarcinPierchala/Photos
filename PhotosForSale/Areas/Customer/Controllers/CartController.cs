@@ -120,7 +120,7 @@ namespace PhotosForSale.Areas.Customer.Controllers
 			if (applicationUser.CompanyId.GetValueOrDefault() == 0)//regular customer => needed to capture payment
 			{
                 //stripe logic
-                var domain = Request.Scheme + "//" + Request.Host.Value + "/";  //https://localhost:7100/;
+                var domain = "https://localhost:7100/";// Request.Scheme + "//" + Request.Host.Value + "/";  //https://localhost:7100/;
                 var options = new Stripe.Checkout.SessionCreateOptions
                 {
                     SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
