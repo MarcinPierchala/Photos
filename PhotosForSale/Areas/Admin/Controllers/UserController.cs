@@ -25,6 +25,29 @@ namespace PhotosForSale.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult RoleManagement(string userId)
+        {
+            string roleId = _db.UserRoles.FirstOrDefault(u=>u.UserId == userId).RoleId;
+
+            RoleManagementVM roleManagementVM = new RoleManagementVM() { 
+                ApplicationUser = _db.ApplicationUsers.Include(u=>u.Company).FirstOrDefault(u=>u.Id==userId),
+                RoleList = _db.Roles.Select(i=>new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Name
+                }),
+                CompanyList = _db.Companies.Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                })
+            };
+
+            roleManagementVM.ApplicationUser.Role = _db.Roles.FirstOrDefault(u => u.Id == roleId).Name;
+
+            return View(roleManagementVM);
+        }
+
         #region API CALLS
         [HttpGet]
         public IActionResult GetAll() 
