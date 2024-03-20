@@ -135,7 +135,7 @@ namespace PhotosForSale.Areas.Admin.Controllers
                 .GetAll(u => u.OrderHeaderId == OrderVM.OrderHeader.Id, includeProperties: "MyPhoto");
 
             //stripe logic
-            var domain = "https://localhost:7100/";
+            var domain = Request.Scheme + "//" + Request.Host.Value + "/"; //"https://localhost:7100/";
             var options = new Stripe.Checkout.SessionCreateOptions
             {
                 SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={OrderVM.OrderHeader.Id}",
