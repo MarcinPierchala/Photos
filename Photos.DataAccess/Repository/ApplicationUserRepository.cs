@@ -18,9 +18,9 @@ namespace Photos.DataAccess.Repository
             _db = db;
         }
 
-        public void Update(ApplicationUser obj)
+        public void Update(ApplicationUser applicationUser)
         {
-            _db.Users.Update(obj);
+            _db.ApplicationUsers.Update(applicationUser);
         }
     }
 }
